@@ -39,3 +39,26 @@ The login handoff and subsequent sync are **confirmed**, but its backend exchang
 - Inspect published browser JavaScript for *non-secret* endpoint and protocol names; browser code cannot expose server-side secrets or implementation.
 - Find a maintained open-source account-service client that documents the game-service protocol, distinct from local file parsers.
 - Establish a registered, revocable authorization route, or an authorized export interface.
+
+## 2026-10-19: current live-site verification
+
+Untapped's public Mobile Tracker landing page is accessible at https://snap.untapped.gg/en/mobile-tracker and currently states:
+- The mobile tracker is free.
+- One-time account linking enables collection sync and match tracking across devices.
+- Account linking requires logging into Untapped; the public page does not expose the protected linking screen.
+- It explicitly distinguishes mobile remote tracking from the PC companion's overlay.
+
+Source: https://snap.untapped.gg/en/mobile-tracker
+
+### Investigation limitations
+- Public web retrieval of this landing page exposes content but no verified backend endpoint, OAuth client registration, or executable protocol.
+- Direct source download from this execution environment failed at DNS resolution, so no JavaScript bundle inspection was performed. Do **not** claim to have reverse-engineered Untapped's client code.
+- The public card/deck APIs found in search are static card metadata services, not player-account endpoints.
+- A dummy authentication attempt against a guessed game host would not establish which grant Untapped uses.
+
+### Concrete next evidence required
+- A public source map / frontend bundle containing *nonsecret* account-link route identifiers, or
+- A documented game-account grant supported for independent clients, or
+- A legitimate account-data export route.
+
+**No private account connection exists yet.** The repo's server is a generic read-only scaffold with no configured upstream.
