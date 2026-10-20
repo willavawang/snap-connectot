@@ -127,3 +127,19 @@ An API-compatible reader could work if the backend accepts independently authori
 ### Terms caveat
 Second Dinner's published June 2025 terms prohibit certain reverse engineering and automated interactions, subject to applicable legal and jurisdiction-specific exceptions:
 https://global.platform.seconddinnertech.com/documents/obj/ies-hotsoon-draft-sg/Snap/snap_terms_of_service_en.html
+
+## Client networking hypothesis tested against tracker source
+
+Fetched and inspected:
+- https://github.com/Razviar/marvelsnaptracker/blob/master/src/main.ts
+- https://github.com/Razviar/marvelsnaptracker/blob/master/src/app/auth.ts
+
+**Correction to a misleading clue:** `setCreds()` in this tracker is NOT a Marvel Snap account authorization exchange. The source shows it reads `settingsStore.getAccount()` and sends account settings to its Electron renderer, configuring hotkeys/overlay preferences. The startup function calls `createGlobalLogParser()`. This is a desktop tracker that parses client state; its `auth.ts` is tracker application state, not evidence of the game-server login protocol.
+
+The separate open-source `Snap_Player_Stats` Android parser confirms native game state is available as JSON snapshots, but again does not show the game client's network layer.
+
+### Client recognition question
+The protocol could accept a bearer credential without strong client checks, or it could enforce device/app attestation, cryptographic request signing, version negotiation, or session-binding. **No public code examined so far establishes which applies.** Do not conclude that a standalone API client can authenticate merely from the existence of Untapped and SnapComplete.
+
+### Next source class to inspect
+A public game-client binary's network-related metadata or an independently published, permissioned network trace from a disposable test account. Tracker `auth.ts` files are false leads.
