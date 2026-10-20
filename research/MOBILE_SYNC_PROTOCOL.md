@@ -62,3 +62,22 @@ Source: https://snap.untapped.gg/en/mobile-tracker
 - A legitimate account-data export route.
 
 **No private account connection exists yet.** The repo's server is a generic read-only scaffold with no configured upstream.
+
+## Protocol refinement: loopback callback clue (verified against primary help documentation)
+
+Untapped's official step-by-step instructions distinguish **two** callback forms:
+- **Google**: an expected failed browser navigation to a loopback address similar to `127.0.0.1`, whose complete URL is submitted within 45 seconds.
+- **Apple**: a redirect to an **Apple page**, whose complete URL is submitted within 45 seconds.
+
+Source: https://help.hearthsim.net/en/articles/10175073-how-to-sync-my-marvel-snap-collection-on-mobile (lines 47–73)
+
+This is **not a standard third-party web OAuth flow**. The Google loopback address is a strong clue that the flow reuses an authentication handoff intended for a local/native application; Untapped collects the resulting callback URL in a separate browser tab. This is an inference, not a confirmed implementation detail. The Apple callback differs and must be studied independently.
+
+### Consequences for our implementation
+- Do not substitute a generic Sign in with Apple widget. The grant is associated with the original game client, not necessarily ours.
+- Do not ask users to paste complete callback URLs into our public GitHub Pages site; such URLs can carry live credentials or codes.
+- A legitimate integration requires verifying that reuse of the game client's authorization grant by an independent client is permitted, or obtaining our own registered grant.
+- The `/collection` bridge must remain disabled until we have a verified endpoint and authorization mechanism.
+
+### Tested access limitation
+An unauthenticated request to `https://snap.untapped.gg/en/mobile-tracker` via the available web retrieval service failed; direct runtime DNS resolution of that host also failed. No bundle source was retrieved, and the public JavaScript inspector remains unexecuted.
