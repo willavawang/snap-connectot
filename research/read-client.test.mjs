@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import {SnapReadClient} from './read-client.mjs';
+let calls=[];
+const fake=async (url,opts)=>{calls.push({url,opts});return {ok:true,headers:new Headers({'content-type':'application/json'}),text:async()=>JSON.stringify({collectionLevel:1234})}};
+const client=new SnapReadClient({baseUrl:'https://example.test/',allowedHost:'example.test',fetchImpl:fake});
+assert.deepEqual(await client.get('/collection',{authorization:'Bearer TEST_PLACEHOLDER'}),{collectionLevel:1234});
+assert.equal(calls[0].opts.method,'GET');
+assert.equal(calls[0].opts.redirect,'error');
+await assert.rejects(()=>client.get('/collection'),/authorization/);
+await assert.rejects(()=>client.get('/../secret',{authorization:'test'}),/Invalid/);
+assert.throws(()=>new SnapReadClient({baseUrl:'http://example.test/',allowedHost:'example.test'}),/HTTPS/);
+assert.throws(()=>new SnapReadClient({baseUrl:'https://example.test/',allowedHost:'other.test'}),/Host/);
+console.log('Six read-client assertions passed');
