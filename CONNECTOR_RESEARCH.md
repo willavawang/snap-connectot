@@ -53,3 +53,23 @@ Third-party trackers may be exchanging a Marvel Snap account login handoff for g
 
 ### Current verdict
 We can reproduce the *UI* of a login but that would not validate account authorization. Do not build or advertise a working login until an accepted game-account integration exists.
+
+## Evidence review — 2026-10-19, next-step execution
+
+- Untapped publicly described its Apple/Google sync as: sign in to Untapped, choose Marvel Snap login method, sign in to Marvel Snap, copy a URL from a broken redirect page, submit URL. Source: https://www.reddit.com/r/MarvelSnap/comments/1gswe56/
+- Official game help confirms Apple/Google account linking, but does not document a developer OAuth grant or collection API: https://marvelsnap.helpshift.com/hc/en/3-marvel-snap/faq/52-how-do-i-link-my-account/
+- Apple's Sign in with Apple documentation explains that identity tokens are issued to the requesting app/client, so creating our own Apple sign-in does not confer access to another app's backend: https://developer.apple.com/documentation/signinwithapple/authenticating-users-with-sign-in-with-apple
+- The GitHub project b-gaona/marvel-snap-api is a **public card/deck dataset** (Kaggle-backed), not an account collection API: https://github.com/b-gaona/marvel-snap-api/blob/master/server/public/documentation.html
+- Third-party API directory investigation did not find a public developer program; this is secondary-source negative evidence, not proof none exists: https://apis.io/providers/second-dinner/
+
+### Protocol model to verify
+Apple identity authorization -> Marvel Snap account binding -> game-service session -> collection/currency read endpoint.
+Only the first two steps have publicly documented evidence; session exchange and read endpoints are unknown. A tracker-specific redirect may contain secrets; never collect it in our static site or this chat.
+
+### Implementation gate
+Do not ship a real login until there is a legitimate client authorization path and a protected backend. First request to a verified, authorized read-only endpoint should retrieve collection level, then cards and currency balances. The present GitHub Pages app is not connected.
+
+### Practical next actions
+1. Ask Second Dinner support whether users/developers can access account collection data via API, OAuth, or export; request documentation and permitted scope.
+2. Seek a documented, noncredential export or partner API from Untapped, without requiring their login redirect or tokens.
+3. If neither is available, consider a separate user-controlled local extraction route only after assessing iOS limitations and game terms.
