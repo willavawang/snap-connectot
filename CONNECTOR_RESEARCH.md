@@ -32,3 +32,24 @@ Read the owner's Marvel Snap collection, card variants, currencies and collectio
 
 ## Existing site
 index.html is a temporary local collection workspace, not a direct connector. Do not confuse it with proof of live sync.
+
+## Protocol investigation — 2026-10-19
+
+### Evidence
+- Untapped's own November 2024 instructions tell users to select Marvel Snap Apple/Google sign-in, then copy a URL from a failed redirect page and submit it to Untapped. This is evidence of an account authorization handoff, **not** proof that an independent client is permitted to replay the redirect or use those credentials. Source: https://www.reddit.com/r/MarvelSnap/comments/1gswe56/
+- The game's official help confirms that linked Apple/Google accounts work across devices: https://marvelsnap.helpshift.com/hc/en/3-marvel-snap/faq/52-how-do-i-link-my-account/
+- The official web shop itself offers login with linked accounts: https://marvelsnap.helpshift.com/hc/en/3-marvel-snap/faq/383-web-shop-log-in-looping/
+- SnapVault also publicly claims periodic collection and deck syncing: https://www.reddit.com/r/MarvelSnap/comments/1rblzmc/snapvault_autosync_is_finally_alive_the_magic_has/
+- **False lead**: marvelapp.com/developers OAuth API belongs to a different product named Marvel App, not the Marvel Snap game.
+
+### Hypothesis, not established fact
+Third-party trackers may be exchanging a Marvel Snap account login handoff for game-service credentials, then querying private game endpoints. We do not know the endpoint, credential format, client registration, revocation semantics, or authorization scope.
+
+### Required proof before implementation
+1. Find a documented official/partner endpoint or obtain permission for third-party game-account access.
+2. Verify a safe, revocable user authorization flow for *our* app; do not ask users to paste redirect URLs, codes, tokens, or cookies.
+3. Verify a read-only endpoint returning collection level as a first smoke test, then cards and currencies.
+4. Host secrets and credential handling only on a secure backend, not GitHub Pages.
+
+### Current verdict
+We can reproduce the *UI* of a login but that would not validate account authorization. Do not build or advertise a working login until an accepted game-account integration exists.
