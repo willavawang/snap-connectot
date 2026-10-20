@@ -102,3 +102,28 @@ The target response likely contains collection, cosmetic, currency and progressi
 
 ### Next evidence threshold
 Only configure the read bridge after finding an actual documented or openly implemented authorization protocol and read endpoint. Neither a publicly posted short-lived Apple callback URL nor another site's token should be collected.
+
+## Game-client architecture investigation: confirmed local client state schema
+
+GitHub code search identified a previously unexamined independent parser:
+https://github.com/sergiodias25/Snap_Player_Stats/blob/main/assets/data_parser.py
+
+Its actual Python source was fetched and inspected. It identifies game-client state paths for **Windows, Linux/Proton, and Android**. Android:
+`/sdcard/Android/data/com.nvsgames.snap/files/Standalone/States/nvprod/{ProfileState,CollectionState,ShopState}.json`.
+
+It reads nested `ServerState` objects. Verified paths in the parser include:
+- `ProfileState.json -> ServerState.Account.SnapId`
+- `ProfileState.json -> ServerState.Account.Name`
+- `ProfileState.json -> ServerState.RankLog.CurrentRankDetails.Rank`
+- `ShopState.json -> ServerState.Account.ProductPurchaseCount`
+
+**Inference:** Marvel Snap's native client stores a locally materialized snapshot of account/server state, which is parsed independently on desktop and Android. This provides a concrete response/data model to target, but does **not** expose the network endpoint that populated it. The Android filesystem path is not an iOS path.
+
+The publicly available PlayFab Unity SDK is **not evidence that Marvel Snap uses PlayFab**. Do not assume its hostnames or authentication methods apply to this game.
+
+### Independent-client viability
+An API-compatible reader could work if the backend accepts independently authorized clients. It could fail if the server binds sessions to registered app identities, device attestation, cryptographic signatures, or version-specific client behavior. None of these requirements has been confirmed or excluded for Marvel Snap. Avoid pretending to be the official client or attempting to bypass such protections.
+
+### Terms caveat
+Second Dinner's published June 2025 terms prohibit certain reverse engineering and automated interactions, subject to applicable legal and jurisdiction-specific exceptions:
+https://global.platform.seconddinnertech.com/documents/obj/ies-hotsoon-draft-sg/Snap/snap_terms_of_service_en.html
