@@ -81,3 +81,24 @@ This is **not a standard third-party web OAuth flow**. The Google loopback addre
 
 ### Tested access limitation
 An unauthenticated request to `https://snap.untapped.gg/en/mobile-tracker` via the available web retrieval service failed; direct runtime DNS resolution of that host also failed. No bundle source was retrieved, and the public JavaScript inspector remains unexecuted.
+
+## Independent corroboration: multiple server-side account sync services (2026)
+
+Three independent tracker announcements corroborate remote account reads, rather than relying on one vendor's claims:
+
+1. **SnapComplete** developer states that after Google/Apple sign-in, its service stores an authentication token that can **read owned cards, cosmetics, currencies and collection level**, but cannot modify the game account. Crucially, Apple *game account sync* works without Apple *site account sign-in*. https://www.reddit.com/r/MarvelSnap/comments/1r5erp6/
+2. **SnapVault** announced automatic game sync on 2026-02-22, including collection level, owned cards, variants, decks, and periodic refresh. https://www.reddit.com/r/MarvelSnap/comments/1rblzmc/
+3. **Untapped** announced mobile collection sync on 2024-11-16 and explicitly confirmed that the method works on iOS, independent of where the game is installed. https://www.reddit.com/r/MarvelSnap/comments/1gswe56/
+
+### Technical implication
+The target response likely contains collection, cosmetic, currency and progression data accessible under a game-account-scoped token. This is independently described by a service implementer but **not** verified by observing raw game-server requests.
+
+### What these sources do NOT establish
+- The token's issuer, precise type, scope, refresh protocol, or revocation mechanism.
+- The upstream game API hostname, read path, or wire format.
+- Permission for third-party independent clients to reuse the existing trackers' auth handoffs.
+
+**Avoid a false lead:** Public `marvel-snap-api` repositories offering card metadata are not authenticated account-data APIs.
+
+### Next evidence threshold
+Only configure the read bridge after finding an actual documented or openly implemented authorization protocol and read endpoint. Neither a publicly posted short-lived Apple callback URL nor another site's token should be collected.
