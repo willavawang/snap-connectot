@@ -73,3 +73,23 @@ Do not ship a real login until there is a legitimate client authorization path a
 1. Ask Second Dinner support whether users/developers can access account collection data via API, OAuth, or export; request documentation and permitted scope.
 2. Seek a documented, noncredential export or partner API from Untapped, without requiring their login redirect or tokens.
 3. If neither is available, consider a separate user-controlled local extraction route only after assessing iOS limitations and game terms.
+
+## Open-source implementation audit — 2026-10-19
+
+Inspected public repository Razviar/marvelsnaptracker, including its src/main.ts:
+https://github.com/Razviar/marvelsnaptracker
+https://raw.githubusercontent.com/Razviar/marvelsnaptracker/master/src/main.ts
+
+Verified architectural finding: this Electron tracker initializes a local log parser (`createGlobalLogParser`) and uses an app authentication module (`setCreds`). Its README describes uploading locally collected collection/deck/battle/inventory information to its own server. **This is evidence for local client-file/log extraction and subsequent upload, not proof of direct game-service API access.** It is not an iPhone-only solution.
+
+Additional open-source scripts read local Windows game state:
+https://github.com/snaptools2023/snapscripts
+Verified path: `AppData/LocalLow/Second Dinner/SNAP/Standalone/States/nvprod/CollectionState.json`, plus `ShopState.json`.
+
+Untapped's mobile flow remains a different architecture: Apple/Google game sign-in, short-lived redirect handoff, remote syncing:
+https://www.reddit.com/r/MarvelSnap/comments/1gswe56/
+The public information does not disclose its backend exchange or game-service endpoint. Do not claim that the desktop tracker provides it.
+
+**Discovery outcome:** Two separate mechanisms are now evidenced: (A) desktop local-state parsing and upload; (B) mobile remote-account authorization and syncing. For an iPhone-only standalone connector, (B) is necessary unless Apple-supported data export becomes available.
+
+**Next code-inspection target:** public mobile-sync integration code or network documentation exposing *non-secret* request paths and supported authorization; avoid capturing or submitting redirect tokens. Without that, the private API bridge cannot be configured honestly.
